@@ -45,11 +45,9 @@ pipeline {
     }
 
     post {
-        success {
-            archiveArtifacts artifacts: 'docs-web/target/*.war, docs-core/target/*.jar, **/target/site/**', allowEmptyArchive: true
-        }
         always {
             junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
+            archiveArtifacts artifacts: 'docs-web/target/*.war, docs-core/target/*.jar, target/site/**, */target/site/**', allowEmptyArchive: true
         }
     }
 }
