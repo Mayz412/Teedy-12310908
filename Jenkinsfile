@@ -5,7 +5,7 @@ pipeline {
         DOCKER_HUB_CREDENTIALS = 'dockerhub_credentials'
         DOCKER_IMAGE = 'mayz412/teedy-app'
         DOCKER_TAG = "${env.BUILD_NUMBER}"
-
+        PATH = "${env.PATH};C:\\Program Files\\Tesseract-OCR"
     }
 
     stages {
@@ -21,7 +21,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                bat 'set PATH=%PATH%;C:\\Program Files\\Tesseract-OCR && mvn test -Dmaven.test.failure.ignore=true'
+                bat 'mvn test -Dmaven.test.failure.ignore=true'
             }
         }
         stage('PMD') {

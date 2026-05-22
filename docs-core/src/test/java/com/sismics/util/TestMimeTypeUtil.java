@@ -23,7 +23,7 @@ public class TestMimeTypeUtil extends BaseTest {
 
         // Detect DOCX files
         path = Paths.get(getResource(FILE_DOCX).toURI());
-        Assert.assertEquals(MimeType.OFFICE_DOCUMENT, MimeTypeUtil.guessMimeType(path, FILE_ODT));
+        Assert.assertEquals(MimeType.OFFICE_DOCUMENT, MimeTypeUtil.guessMimeType(path, FILE_DOCX));
 
         // Detect PPTX files
         path = Paths.get(getResource(FILE_PPTX).toURI());
