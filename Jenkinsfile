@@ -68,8 +68,6 @@ pipeline {
                 }
             }
         }
-            }
-        }
         stage('Run containers') {
             steps {
                 bat 'docker stop teedy-container-8082 || exit 0'
