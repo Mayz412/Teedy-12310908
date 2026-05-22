@@ -57,27 +57,24 @@ pipeline {
         }
         stage('Upload image') {
             steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', DOCKER_HUB_CREDENTIALS) {
-                        docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").push()
-                        docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").push('latest')
-                    }
+                withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDENTIALS, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    bat "docker login -u %DOCKER_USER% -p %DOCKER_PASS%"
+                    bat "docker push %DOCKER_IMAGE%:%DOCKER_TAG%"
+                    bat "docker push %DOCKER_IMAGE%:latest"
                 }
             }
         }
         stage('Run containers') {
             steps {
-                script {
-                    bat 'docker stop teedy-container-8082 || exit 0'
-                    bat 'docker rm teedy-container-8082 || exit 0'
-                    bat 'docker stop teedy-container-8083 || exit 0'
-                    bat 'docker rm teedy-container-8083 || exit 0'
-                    bat 'docker stop teedy-container-8084 || exit 0'
-                    bat 'docker rm teedy-container-8084 || exit 0'
-                    docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").run('--name teedy-container-8082 -d -p 8082:8080')
-                    docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").run('--name teedy-container-8083 -d -p 8083:8080')
-                    docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").run('--name teedy-container-8084 -d -p 8084:8080')
-                }
+                bat 'docker stop teedy-container-8082 || exit 0'
+                bat 'docker rm teedy-container-8082 || exit 0'
+                bat 'docker stop teedy-container-8083 || exit 0'
+                bat 'docker rm teedy-container-8083 || exit 0'
+                bat 'docker stop teedy-container-8084 || exit 0'
+                bat 'docker rm teedy-container-8084 || exit 0'
+                bat "docker run -d --name teedy-container-8082 -p 8082:8080 %DOCKER_IMAGE%:%DOCKER_TAG%"
+                bat "docker run -d --name teedy-container-8083 -p 8083:8080 %DOCKER_IMAGE%:%DOCKER_TAG%"
+                bat "docker run -d --name teedy-container-8084 -p 8084:8080 %DOCKER_IMAGE%:%DOCKER_TAG%"
             }
         }
     }
