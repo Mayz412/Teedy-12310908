@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Utility to check MIME types.
@@ -11,6 +13,25 @@ import java.nio.file.Path;
  * @author bgamard
  */
 public class MimeTypeUtil {
+    private static final Map<String, String> EXTENSION_MAP = new HashMap<>();
+
+    static {
+        EXTENSION_MAP.put("png", MimeType.IMAGE_PNG);
+        EXTENSION_MAP.put("jpg", MimeType.IMAGE_JPEG);
+        EXTENSION_MAP.put("jpeg", MimeType.IMAGE_JPEG);
+        EXTENSION_MAP.put("gif", MimeType.IMAGE_GIF);
+        EXTENSION_MAP.put("zip", MimeType.APPLICATION_ZIP);
+        EXTENSION_MAP.put("pdf", MimeType.APPLICATION_PDF);
+        EXTENSION_MAP.put("odt", MimeType.OPEN_DOCUMENT_TEXT);
+        EXTENSION_MAP.put("docx", MimeType.OFFICE_DOCUMENT);
+        EXTENSION_MAP.put("pptx", MimeType.OFFICE_PRESENTATION);
+        EXTENSION_MAP.put("xlsx", MimeType.OFFICE_SHEET);
+        EXTENSION_MAP.put("txt", MimeType.TEXT_PLAIN);
+        EXTENSION_MAP.put("csv", MimeType.TEXT_CSV);
+        EXTENSION_MAP.put("webm", MimeType.VIDEO_WEBM);
+        EXTENSION_MAP.put("mp4", MimeType.VIDEO_MP4);
+    }
+
     /**
      * Try to guess the MIME type of a file.
      * 
@@ -20,14 +41,22 @@ public class MimeTypeUtil {
      * @throws IOException e
      */
     public static String guessMimeType(Path file, String name) throws IOException {
+        // Prefer extension-based detection for known types (platform-independent)
+        if (name != null) {
+            int dot = name.lastIndexOf('.');
+            if (dot >= 0) {
+                String ext = name.substring(dot + 1).toLowerCase();
+                String mapped = EXTENSION_MAP.get(ext);
+                if (mapped != null) {
+                    return mapped;
+                }
+            }
+        }
+
         String mimeType = Files.probeContentType(file);
 
         if (mimeType == null && name != null) {
             mimeType = URLConnection.getFileNameMap().getContentTypeFor(name);
-        }
-
-        if (name != null && name.toLowerCase().endsWith(".csv")) {
-            return MimeType.TEXT_CSV;
         }
 
         if (mimeType == null) {
