@@ -26,6 +26,10 @@ public class MimeTypeUtil {
             mimeType = URLConnection.getFileNameMap().getContentTypeFor(name);
         }
 
+        if (name != null && name.toLowerCase().endsWith(".csv")) {
+            return MimeType.TEXT_CSV;
+        }
+
         if (mimeType == null) {
             return MimeType.DEFAULT;
         }
