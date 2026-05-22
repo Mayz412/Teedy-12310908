@@ -59,7 +59,7 @@ pipeline {
         stage('Upload image') {
             steps {
                 retry(3) {
-                    withCredentials([string(credentialsId: "${DOCKER_HUB_CREDENTIALS}", variable: 'DOCKER_PASS')]) {
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
                         bat "docker tag %DOCKER_IMAGE%:%DOCKER_TAG% %DOCKER_IMAGE%:latest"
                         bat "docker push %DOCKER_IMAGE%:%DOCKER_TAG%"
